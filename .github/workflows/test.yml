@@ -1,7 +1,9 @@
 name: Daniel Action
 
 on:
-  push
+  pull_request: 
+    branches: 
+      - main
 
 jobs:
   daniel:

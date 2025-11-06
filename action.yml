@@ -1,5 +1,5 @@
 name: Daniel Youtube Demo Action
 description: This action greets persons
 runs:
-  using: node16
-  main: dist/index.js
+  using: node20
+  main: src/index.js

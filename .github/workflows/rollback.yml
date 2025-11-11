@@ -29,9 +29,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Crear rollback al tag anterior
+      - name: Crear rollback con tag nuevo
         run: |
-          gh release create ${{ steps.tags.outputs.previous_tag }} \
+          gh release create ${{ steps.tags.outputs.previous_tag }}-rollback \
             --title "Rollback to ${{ steps.tags.outputs.previous_tag }}" \
             --notes "Rollback automático"
         env:

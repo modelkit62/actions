@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Rollback Release
-        # if: failure() && steps.create_release.outputs.id != ''
+        if: failure() && steps.create_release.outputs.id != ''
         uses: author/action-rollback@stable
         with:
           # Using a known release ID

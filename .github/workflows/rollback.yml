@@ -13,15 +13,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Obtener tags
-        id: tags
-        run: |
-          git fetch --tags
-          LAST_TAG=$(git tag --sort=-v:refname | sed -n '1p')
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | sed -n '2p')
-          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
-          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
-
       - name: Obtener último y penúltimo tag
         id: tags
         run: |

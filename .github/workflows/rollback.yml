@@ -1,4 +1,4 @@
-name: Publish
+name: Rollback
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:           # You may need this permission for removing old releases
   contents: write
 
 jobs:
-  publish:
+  rollback:
     runs-on: ubuntu-latest
     steps:   
       - name: Release

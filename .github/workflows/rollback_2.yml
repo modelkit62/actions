@@ -8,7 +8,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # if: contains(github.event.comment.body, '/revert')
+    if: contains(github.event.comment.body, '/revert')
 
     steps:
       - name: Checkout latest code

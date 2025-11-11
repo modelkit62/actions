@@ -22,21 +22,23 @@ jobs:
           echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
           echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
 
-      - name: Obtener versión anterior
-        id: get_previous
+      - name: Obtener último y penúltimo tag
+        id: tags
         run: |
           git fetch --tags
+          LAST_TAG=$(git tag --sort=-v:refname | sed -n '1p')
           PREVIOUS_TAG=$(git tag --sort=-v:refname | sed -n '2p')
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
           echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
 
       - name: Borrar release y tag actual
         run: |
-          gh release delete ${{ steps.tags.outputs.last_tag }} -y
-          git push origin :refs/tags/${{ steps.tags.outputs.last_tag }}
+          gh release delete ${{ steps.tags.outputs.last_tag }} -y || true
+          git push origin :refs/tags/${{ steps.tags.outputs.last_tag }} || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Crear rollback
+      - name: Crear rollback al tag anterior
         run: |
           gh release create ${{ steps.tags.outputs.previous_tag }} \
             --title "Rollback to ${{ steps.tags.outputs.previous_tag }}" \

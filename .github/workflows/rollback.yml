@@ -13,6 +13,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Obtener tags
+        id: tags
+        run: |
+          git fetch --tags
+          LAST_TAG=$(git tag --sort=-v:refname | sed -n '1p')
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | sed -n '2p')
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
       - name: Obtener versión anterior
         id: get_previous
         run: |
@@ -22,15 +31,15 @@ jobs:
 
       - name: Borrar release y tag actual
         run: |
-          gh release delete ${{ github.ref_name }} -y
-          git push origin :refs/tags/${{ github.ref_name }}
+          gh release delete ${{ steps.tags.outputs.last_tag }} -y
+          git push origin :refs/tags/${{ steps.tags.outputs.last_tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Crear rollback
         run: |
-          gh release create ${{ steps.get_previous.outputs.previous_tag }} \
-            --title "Rollback to ${{ steps.get_previous.outputs.previous_tag }}" \
+          gh release create ${{ steps.tags.outputs.previous_tag }} \
+            --title "Rollback to ${{ steps.tags.outputs.previous_tag }}" \
             --notes "Rollback automático"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

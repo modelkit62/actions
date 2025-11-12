@@ -1,4 +1,4 @@
-name: Rollback dinámico
+name: Rollback
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Obtener último y penúltimo tag
+      - name: Retrieve the latest and the second-to-last tag
         id: tags
         run: |
           git fetch --tags
@@ -22,17 +22,22 @@ jobs:
           echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
           echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
 
-      - name: Borrar release y tag actual
+      - name: Remove the current release and its tag
         run: |
           gh release delete ${{ steps.tags.outputs.last_tag }} -y || true
           git push origin :refs/tags/${{ steps.tags.outputs.last_tag }} || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Crear rollback con tag nuevo
+      - name: Create a rollback with a new tag
         run: |
           gh release create ${{ steps.tags.outputs.previous_tag }}-rollback \
             --title "Rollback to ${{ steps.tags.outputs.previous_tag }}" \
-            --notes "Rollback automático"
+            --notes "Automatic rollback"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Revert code to previous tag
+        run: |
+          git reset --hard ${{ steps.tags.outputs.previous_tag }}
+          git push origin HEAD --force
